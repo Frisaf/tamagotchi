@@ -54,6 +54,18 @@ class Tamagotchi:
     def print_stats(self):
         print(f"{self.name}'s stats:\nHealth: {self.health} | Hunger: {self.hunger} | Mess: {self.mess} | Hapiness: {self.hapiness} | Age: {self.age} | Discipline: {self.discipline} | Sick: {self.is_sick}")
 
+        if self.is_sick or self.hunger > 150:
+            print("(O ~ O)")
+        
+        elif self.hapiness < 30 or self.health < 30:
+            print("(O ∩ O)")
+        
+        elif self.hapiness > 100:
+            print("(=^v^=)")
+        
+        else:
+            print("(° - °)")
+
     def roll_sickness(self):
         roll = random.random()
 
@@ -79,9 +91,9 @@ class Tamagotchi:
             print(f"{option} is not an option.")
             return
         
-        roll = random.randint(1, self.discipline + (10 if self.discipline <= 5 else 0))
+        roll = random.randint(1, self.discipline + (10 if self.discipline <= 3 else 0))
 
-        if self.discipline <= 10 and roll >= self.discipline:
+        if self.discipline <= 5 and roll >= self.discipline:
             input(f"{self.name} refuses to eat. Press ENTER to discipline!")
 
             if not self.train(True):
@@ -91,12 +103,11 @@ class Tamagotchi:
 
         if food_type == "food":
             self.hunger = max(self.hunger - 10, 0)
-            self.hapiness += 10
+            self.hapiness += 5
             self.health += 5
         
         elif food_type == "snacks":
-            self.hunger = max(self.hunger - 5, 0)
-            self.hapiness += 20
+            self.hapiness += 30
             self.health -= 5
         
         self.mess += 10
@@ -105,6 +116,31 @@ class Tamagotchi:
         print(f"You feed {self.name}")
 
     def play(self):
+        trivia = [
+            {
+                "question": "Is the earth flat?",
+                "answers": ["no", "nope", "n", "nah"]
+            },
+            {
+                "question": "Who is the bestest pet?",
+                "answers": ["you"]
+            },
+            {
+                "question": "Am I adopted?",
+                "answers": ["yes", "no", "maybe"]
+            },
+            {
+                "question": "Can I have some food pwease...",
+                "answers": ["maybe"]
+            }
+        ]
+
+        trivia_dict = random.choice(trivia)
+        answer = input(trivia_dict["question"] + "\n> ")
+
+        if answer not in trivia_dict["answers"]:
+            return print(f"You try to play with {self.name}, but they don't have the energy.")
+
         self.hapiness += 20
         self.has_played = True
 
@@ -124,7 +160,7 @@ class Tamagotchi:
             return print(f"{self.name} is old and is too tired to learn something new.")
         
         if discipline:
-            if random.randint(1, 10) >= 5:
+            if random.randint(1, 10) >= 3:
                 self.discipline += 1
                 return discipline
             
@@ -136,7 +172,7 @@ class Tamagotchi:
         self.discipline += 1
         self.hunger += 20
 
-pet = Tamagotchi(50, 50, 0, 50, input("What is your pet's name?\n> ").title())
+pet = Tamagotchi(50, 10, 0, 50, input("What is your pet's name?\n> ").title())
 
 while pet.health > 0:
     pet.print_stats()
@@ -159,6 +195,9 @@ while pet.health > 0:
     
     elif choice in ["meds", "m"] and pet.is_sick:
         pet.give_meds()
+    
+    else:
+        print("Your pet looks at you, puzzled. Time passes...")
     
     pet.check_stats()
     pet.age_increase(1)
